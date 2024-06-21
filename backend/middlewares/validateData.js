@@ -1,4 +1,5 @@
 const { ZodError } = require('zod');
+const StatusCodes = require('http-status-codes');
 
 const validateData = (schema) => {
   return (req, res, next) => {
