@@ -47,9 +47,12 @@ const Features = () => (
       </h2>
       <div className='grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4'>
         {featuresData.map((feature) => (
-          <div key={feature.id} className='mb-8 rounded-md shadow-sm'>
-            <div className='bg-gray-100 p-8 rounded-lg shadow-md h-full flex flex-col justify-between'>
-              <div className='my-4'>
+          <div
+            key={feature.id}
+            className='mb-8 rounded-md shadow-sm hover:shadow-md'
+          >
+            <div className='bg-gray-50 p-4 rounded-lg shadow-md h-full flex flex-col'>
+              <div className='mb-4'>
                 <img
                   src={feature.imgURL}
                   alt='Smart Job Matching'
