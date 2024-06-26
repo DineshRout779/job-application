@@ -2,6 +2,10 @@
 @tailwind components;
 @tailwind utilities;
 
+:root {
+  scroll-behavior: smooth;
+}
+
 * {
   font-family: 'Inter', sans-serif;
 }
@@ -11,9 +15,8 @@ h2,
 h3,
 h4,
 h5,
-button,
-a {
-  font-family: 'Rubik', sans-serif !important;
+button {
+  font-family: 'Rubik', sans-serif;
 }
 
 @layer base {
