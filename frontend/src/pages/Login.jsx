@@ -1,11 +1,18 @@
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import apiClient from '@/services/apiClient';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import * as Yup from 'yup';
 import { useFormik } from 'formik';
+import toast from 'react-hot-toast';
+import { useDispatch, useSelector } from 'react-redux';
+import { login } from '@/app/auth/authSlice';
+import { useEffect } from 'react';
 
 const Login = () => {
+  const dispatch = useDispatch();
+  const navigate = useNavigate();
+  const { token, user } = useSelector((state) => state.auth);
   const formik = useFormik({
     initialValues: {
       email: '',
@@ -20,23 +27,48 @@ const Login = () => {
         const res = await apiClient.post('/auth/login', values);
 
         console.log(res);
+
+        if (res.status === 200) {
+          dispatch(login({ token: res.data.token }));
+          localStorage.setItem('token', JSON.stringify(res.data.token));
+        }
       } catch (error) {
         console.log(error.response);
+        toast.error(error?.response?.data?.message);
       }
     },
   });
+
+  useEffect(() => {
+    if (user) {
+      switch (user.role) {
+        case 'user':
+          navigate('/dashboard/user');
+          break;
+        case 'employer':
+          navigate('/dashboard/employer');
+          break;
+        case 'admin':
+          navigate('/dashboard/admin');
+          break;
+        default:
+          navigate('/dashboard/user');
+      }
+    }
+  }, [user]);
+
   return (
     <section className='bg-white '>
       <div className='flex min-h-screen'>
-        <div className='relative basis-0 md:basis-1/2'>
+        <div className='relative w-0 basis-0 md:basis-1/2'>
           <img
             alt=''
             loading='lazy'
             src='https://images.pexels.com/photos/927451/pexels-photo-927451.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1'
             className='absolute inset-0 h-full w-full object-cover opacity-80'
           />
-          <div className='bg-black/50 absolute top-0 bottom-0 left-0 right-0'></div>
-          <div className='absolute bottom-0 p-12'>
+          <div className='bg-black/50 w-0 md:w-full md:absolute top-0 bottom-0 left-0 right-0'></div>
+          <div className='hidden md:block absolute bottom-0 p-12'>
             <h2 className='mt-6 text-2xl font-bold text-white sm:text-3xl md:text-4xl'>
               Welcome to JobHunt 🚀
             </h2>
@@ -47,6 +79,7 @@ const Login = () => {
             </p>
           </div>
         </div>
+
         <div className='basis-full md:basis-1/2 flex justify-center items-center'>
           <form
             onSubmit={formik.handleSubmit}

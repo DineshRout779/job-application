@@ -24,6 +24,7 @@ const login = async (req, res) => {
     const token = jwt.sign(
       {
         _id: existingUser._id,
+        role: existingUser.role,
       },
       process.env.JWT_SECRET,
       {
@@ -43,7 +44,7 @@ const login = async (req, res) => {
 
 const signup = async (req, res) => {
   try {
-    const { firstName, lastName, email, password } = req.body;
+    const { firstName, lastName, email, password, role } = req.body;
 
     const existingUser = await User.findOne({ email });
 
@@ -60,6 +61,7 @@ const signup = async (req, res) => {
       lastName,
       email,
       password: hashedPassword,
+      role: role ? role : 'user',
     });
 
     await newUser.save();
@@ -67,6 +69,7 @@ const signup = async (req, res) => {
     const token = jwt.sign(
       {
         _id: newUser._id,
+        role: existingUser.role,
       },
       process.env.JWT_SECRET,
       {
@@ -115,4 +118,28 @@ const resetPassword = async (req, res) => {
   }
 };
 
-module.exports = { login, signup, forgotPassword, resetPassword };
+const getLoggedinUser = async (req, res) => {
+  try {
+    const user = await User.findById(req.user._id);
+
+    user.password = undefined;
+    return res.status(200).json({
+      message: 'User fetched successfully',
+      user,
+    });
+  } catch (error) {
+    console.log('error while fetching user', error);
+    return res.status(500).json({
+      message: 'Internal server error',
+      error,
+    });
+  }
+};
+
+module.exports = {
+  login,
+  signup,
+  forgotPassword,
+  resetPassword,
+  getLoggedinUser,
+};
